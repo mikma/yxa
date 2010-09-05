@@ -1,4 +1,3 @@
 t/feature/yxa_yaws.diff -p1
 t/feature/yxa_yaws_makefile.diff -p1
 t/fix/net_util.diff -p1
-t/fix/naptr_replacement.diff -p1
