@@ -13,8 +13,7 @@ Vcs-Browser: http://svn.debian.org/wsvn/pkg-voip/yxa/?op=log
 
 Package: yxa
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, erlang-base (>= 1:11.b.5)
- | erlang-base-hipe (>= 1:11.b.5), erlang-nox (>= 1:11.b.5), yaws (>= 1.73)
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${erlang:Depends}, yaws (>= 1.73)
 Pre-Depends: adduser
 Description: SIP software written in Erlang
  Yxa is SIP software written in Erlang  (Erlang is a programming language
