@@ -11,7 +11,10 @@ common-configure-arch common-configure-indep:: aclocal.m4
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/autotools.mk
 include /usr/share/cdbs/1/rules/patchsys-quilt.mk
+ifneq (,$(findstring topgit,$(DEB_BUILD_OPTIONS)))
 include /usr/share/topgit/tg2quilt.mk
+endif
+
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
