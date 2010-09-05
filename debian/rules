@@ -3,7 +3,7 @@
 
 QUILT_PATCH_DIR ?= debian/patches
 
-TG_BRANCHES := t/feature/yxa_yaws,t/feature/yxa_yaws_makefile,t/fix/net_util,t/fix/naptr_replacement
+TG_BRANCHES := t/feature/yxa_yaws,t/feature/yxa_yaws_makefile,t/fix/net_util
 
 # Ensure aclocal.m4 exists before requesting cdbs to update it.
 common-configure-arch common-configure-indep:: aclocal.m4
