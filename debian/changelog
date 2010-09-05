@@ -1,4 +1,4 @@
-yxa (1.0+git5aeee79-1~1) UNRELEASED; urgency=low
+yxa (1.0+20100905-1~1) UNRELEASED; urgency=low
   * Initial release (Closes: #377617)
   * Start applications using -s switch to erl instead of using custom boot
     file, except when running distribution over ssl.
