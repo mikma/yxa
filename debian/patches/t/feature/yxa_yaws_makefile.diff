@@ -6,14 +6,64 @@ YXA embedded Yaws web server application makefile.
 Signed-off-by: Mikael Magnusson <mikma@users.sourceforge.net>
 
 ---
- yaws/src/Makefile.in |   43 +++++++++++++++++++++++++++++++++++++++----
- 1 files changed, 39 insertions(+), 4 deletions(-)
+ configure.ac         |   26 +++++++++++++++++++++++++-
+ yaws/src/Makefile.in |   45 +++++++++++++++++++++++++++++++++++++++++----
+ 2 files changed, 66 insertions(+), 5 deletions(-)
 
+diff --git a/configure.ac b/configure.ac
+index 3858e7a..9fad5a5 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -8,6 +8,7 @@ AC_CONFIG_AUX_DIR([scripts])
+ 
+ AC_PROG_CC
+ AC_PROG_INSTALL
++PKG_PROG_PKG_CONFIG
+ 
+ AC_ARG_WITH(erlang,
+ 	AC_HELP_STRING([--with-erlang=dir],
+@@ -26,12 +27,35 @@ AC_ERLANG_NEED_ERLC
+ AC_ERLANG_PATH_ERL
+ AC_ERLANG_SUBST_INSTALL_LIB_DIR
+ AC_ERLANG_SUBST_ERTS_VER
++
++AC_ARG_WITH(yaws,
++	[AC_HELP_STRING([--with-yaws],
++		[auto detect yaws [[default=yes]]])])
++
++has_yaws="no"
++case "$with_yaws" in
++    '')
++	dnl Auto-detect yaws
++	PKG_CHECK_MODULES([YAWS],[yaws >= 1.73],[has_yaws="yes"],[AC_MSG_RESULT([no])])
++	;;
++    yes)
++	dnl Require yaws
++	PKG_CHECK_MODULES([YAWS],[yaws >= 1.73],[has_yaws="yes"])
++	;;
++esac
++
++if test "$has_yaws" = "yes"; then
++    dnl Yaws found
++    ERLANG_LIB_VER_yaws=`${PKG_CONFIG} --modversion yaws`
++    AC_SUBST(ERLANG_LIB_VER_yaws)
++    ERLANG_LIB_VER_SUBST="$ERLANG_LIB_VER_SUBST -e 's,[@]ERLANG_LIB_VER_yaws[@],\$(ERLANG_LIB_VER_yaws),g'"
++fi
++
+ ERLANG_SUBST_LIB_VER(asn1)
+ ERLANG_SUBST_LIB_VER(kernel)
+ ERLANG_SUBST_LIB_VER(mnesia)
+ ERLANG_SUBST_LIB_VER(ssl)
+ ERLANG_SUBST_LIB_VER(stdlib)
+-ERLANG_SUBST_LIB_VER(yaws)
+ ERLANG_SUBST_LIB_VER(crypto)
+ ERLANG_SUBST_LIB_VER(public_key)
+ 
 diff --git a/yaws/src/Makefile.in b/yaws/src/Makefile.in
-index f14785c..09f5f90 100644
+index f14785c..f41b81d 100644
 --- a/yaws/src/Makefile.in
 +++ b/yaws/src/Makefile.in
-@@ -18,6 +18,21 @@ exec_prefix=${prefix}
+@@ -18,8 +18,25 @@ exec_prefix=${prefix}
  builddir = @builddir@
  local_file = @local_file@
  
@@ -34,8 +84,12 @@ index f14785c..09f5f90 100644
 +
  ERLC = @ERLC@
  ERL = @ERL@
++YAWS_CFLAGS = @YAWS_CFLAGS@
++YAWS_LIBS = @YAWS_LIBS@
  
-@@ -30,7 +45,13 @@ doc_dir = ../../doc
+ INSTALL = @INSTALL@
+ install_DATA = @INSTALL_DATA@
+@@ -30,7 +47,13 @@ doc_dir = ../../doc
  
  mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
  
@@ -49,11 +103,11 @@ index f14785c..09f5f90 100644
  	yxa_yaws_util.erl
  
  imported_hrl_FILES = \
-@@ -46,14 +67,20 @@ yxa_hrl_FILES = $(imported_hrl_FILES) $(hrl_FILES)
+@@ -46,14 +69,20 @@ yxa_hrl_FILES = $(imported_hrl_FILES) $(hrl_FILES)
  CC = gcc
  CFLAGS = -Wall
  
-+EFLAGS = -W +debug_info -DDOCROOT=\"$(docrootdir)\" -DCACHEDIR=\"$(tmpdir)\" -DLOGDIR=\"$(logdir)\"
++EFLAGS = -W +debug_info -DDOCROOT=\"$(docrootdir)\" -DCACHEDIR=\"$(tmpdir)\" -DLOGDIR=\"$(logdir)\" $(YAWS_CFLAGS)
 +
  beam_FILES = $(addprefix $(ebin_dir)/, $(erl_FILES:.erl=.beam))
  
@@ -73,7 +127,7 @@ index f14785c..09f5f90 100644
  	  $(install_DATA) $$p $(DESTDIR)$(beamdir)/$$f ; \
  	done
  	for p in $(hrl_FILES); do \
-@@ -87,5 +114,13 @@ SUFFIXES = .c .o .hrl .beam .erl .boot .rel .rel-in .app .app-in
+@@ -87,5 +116,13 @@ SUFFIXES = .c .o .hrl .beam .erl .boot .rel .rel-in .app .app-in
  .SUFFIXES: .c .o .hrl .beam .erl .boot .rel .rel-in .app .app-in
  
  $(ebin_dir)/%.beam:	$(srcdir)/%.erl
@@ -89,4 +143,4 @@ index f14785c..09f5f90 100644
 +yxa_yaws.boot: $(ebin_dir)/yxa_yaws.app $(ebin_dir)/yxa_yaws.rel
 +	$(systools_make_script)
 -- 
-tg: (5aeee79..) t/feature/yxa_yaws_makefile (depends on: upstream)
+tg: (aaf809c..) t/feature/yxa_yaws_makefile (depends on: upstream)
