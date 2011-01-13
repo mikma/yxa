@@ -60,7 +60,7 @@ index 3858e7a..9fad5a5 100644
  ERLANG_SUBST_LIB_VER(public_key)
  
 diff --git a/yaws/src/Makefile.in b/yaws/src/Makefile.in
-index f14785c..f41b81d 100644
+index f14785c..478e7ee 100644
 --- a/yaws/src/Makefile.in
 +++ b/yaws/src/Makefile.in
 @@ -18,8 +18,25 @@ exec_prefix=${prefix}
@@ -94,7 +94,7 @@ index f14785c..f41b81d 100644
  mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
  
 +systools_make_script = \
-+	$(ERLC) -pa $(ebin_dir) -I$(srcdir) $(ebin_dir)/$*.rel
++	$(ERLC) -pa $(ebin_dir) $(YAWS_LIBS) -I$(srcdir) $(ebin_dir)/$*.rel
 +
  erl_FILES = \
 +	yxa_yaws_app.erl \

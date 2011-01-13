@@ -46,7 +46,7 @@ index 0000000..88b5442
 +  {yxa_yaws, "0.0"}]}.
 diff --git a/yaws/src/yxa_yaws_app.erl b/yaws/src/yxa_yaws_app.erl
 new file mode 100644
-index 0000000..f7b2180
+index 0000000..ea98f51
 --- /dev/null
 +++ b/yaws/src/yxa_yaws_app.erl
 @@ -0,0 +1,134 @@
@@ -67,7 +67,7 @@ index 0000000..f7b2180
 +%% api:s
 +-export([start/0, reload/0, stop/0, restart/0, status/0]).
 +
-+-include_lib("yaws/include/yaws.hrl").
++-include("yaws.hrl").
 +
 +%% application callbacks
 +start(normal, []) ->
