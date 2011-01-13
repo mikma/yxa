@@ -6,14 +6,22 @@ YXA embedded Yaws web server application makefile.
 Signed-off-by: Mikael Magnusson <mikma@users.sourceforge.net>
 
 ---
- configure.ac         |   26 +++++++++++++++++++++++++-
+ configure.ac         |   28 ++++++++++++++++++++++++++--
  yaws/src/Makefile.in |   45 +++++++++++++++++++++++++++++++++++++++++----
- 2 files changed, 66 insertions(+), 5 deletions(-)
+ 2 files changed, 67 insertions(+), 6 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
-index 3858e7a..9fad5a5 100644
+index 3858e7a..d678e20 100644
 --- a/configure.ac
 +++ b/configure.ac
+@@ -1,6 +1,6 @@
+ dnl Process this file with autoconf to produce a configure script.
+ AC_REVISION($Revision$)
+-AC_PREREQ(2.64)
++AC_PREREQ(2.61)
+ AC_INIT(YXA, 1.0-current, yxa-devel@lists.su.se)
+ REQUIRE_ERLANG="5.7.2 (Erlang/OTP R13B-1)"
+ AC_CONFIG_SRCDIR([src/incomingproxy.erl])
 @@ -8,6 +8,7 @@ AC_CONFIG_AUX_DIR([scripts])
  
  AC_PROG_CC
