@@ -2,3 +2,4 @@ t/feature/yxa_yaws.diff -p1
 t/feature/yxa_yaws_makefile.diff -p1
 t/fix/net_util.diff -p1
 otp-r14a -p1
+autotools -p0

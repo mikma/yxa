@@ -96,3 +96,9 @@ get-orig-source:
 	@@[ -d ../tarballs/. ]||mkdir -p ../tarballs
 	@@chmod +x debian/get-orig-source.sh
 	debian/get-orig-source.sh $(UPVERSION) $(URL) $(VCSREV)
+
+generate-autotools:
+	$(MAKE) -f debian/rules patch
+	./bootstrap
+	(for f in configure aclocal.m4 ; do diff -u /dev/null $$f ; done) > debian/patches/autotools || true
+	$(MAKE) -f debian/rules unpatch
