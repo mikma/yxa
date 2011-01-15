@@ -1,7 +1,5 @@
 yxa (1.0+20100905-1~2) UNRELEASED; urgency=low
   * Initial release (Closes: #377617)
-  * Start applications using -s switch to erl instead of using custom boot
-    file, except when running distribution over ssl.
   * Add LSB keyword section to init file, and return proper exit status
     codes.
   * Updated to policy version 3.7.3. No changes required.
