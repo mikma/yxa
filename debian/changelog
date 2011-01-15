@@ -1,4 +1,4 @@
-yxa (1.0+20100905-1~2) UNRELEASED; urgency=low
+yxa (1.0+git20101019.aaf809c-1~1) UNRELEASED; urgency=low
   * Initial release (Closes: #377617)
   * Add LSB keyword section to init file, and return proper exit status
     codes.
