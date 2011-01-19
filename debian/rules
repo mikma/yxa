@@ -74,9 +74,6 @@ DEB_CONFIGURE_EXTRA_FLAGS := \
 		--disable-erlang-version-check \
 		LDFLAGS="-Wl,-z,defs"
 
-DEB_AUTO_UPDATE_ACLOCAL := $(shell aclocal --version < /dev/null| head -n 1 | sed -e 's/.*[^0-9\.]\([0-9][0-9]*\.[0-9][0-9]*\).*/\1/')
-DEB_AUTO_UPDATE_AUTOCONF := ' '
-
 DEB_DESTDIR = $(CURDIR)/debian/tmp/
 
 aclocal.m4:
