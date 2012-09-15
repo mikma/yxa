@@ -23,6 +23,7 @@
 	 casegrep/2,
 	 join/2,
 	 concat/2,
+	 parse_v6/1,
 	 remove_v6_brackets/1,
 
 	 test/0
@@ -202,6 +203,25 @@ concat([], _Separator) ->
     [];
 concat([A | B], Separator) ->
     A ++ Separator ++ concat(B, Separator).
+
+%%--------------------------------------------------------------------
+%% @spec    (V6Addr) -> (_,_,_,_,_,_,_,_)|{error,Error}
+%%            V6Addr = string()
+%%
+%% @doc     Parse IPv6 address, with or without brackets,
+%%          and return response from inet_parse:ipv6_address
+%% @end
+%%--------------------------------------------------------------------
+parse_v6([$[ | Rest]) ->
+    case lists:reverse(Rest) of
+	[$] | Rev] ->
+	    inet_parse:ipv6_address(lists:reverse(Rev));
+	_ ->
+	    %% Unbalanced bracket
+	    {error,einval}
+    end;
+parse_v6(A) ->
+    inet_parse:ipv6_address(A).
 
 %%--------------------------------------------------------------------
 %% @spec    (In) ->

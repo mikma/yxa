@@ -102,15 +102,56 @@ get_iplist() ->
 	{ok, List} ->
 	    List;
 	none ->
-	    {ok, IfList} = inet:getiflist(),
-	    F = fun(If) ->
-			{ok, B} = inet:ifget(If, [addr, flags]),
-			B
-		end,
-	    IfData = [F(If) || If <- IfList],
-	    Addrs = get_ifaddrs(IfData),
+	    {ok, IfList} = inet:getifaddrs(),
+	    Addrs = get_allifaddrs(IfList),
 	    lists:usort(Addrs)
     end.
+
+%%--------------------------------------------------------------------
+%% @spec    (IfList) ->
+%%            Addresses
+%%
+%%            IfList = [IfData]
+%%            IfData = {IfName, [Opt]}
+%%            Opt = {string(), OptValue}
+%%            Addresses = [string()]
+%%
+%% @doc     Filter the global addresses of all interfaces which are 'up'
+%% @end
+%%--------------------------------------------------------------------
+get_allifaddrs(IfList) ->
+    get_allifaddrs(IfList, []).
+
+get_allifaddrs([], Acc) ->
+    Acc;
+get_allifaddrs([{_IfName, IfData}|Res], Acc) when is_list(IfData) ->
+    {value, {flags, Flags}} = lists:keysearch(flags, 1, IfData),
+    Addrs = filter_ifaddrs(IfData),
+    Ips = lists:map(fun makeip/1, usable_addrs(Flags, Addrs)),
+    get_allifaddrs(Res, Ips ++ Acc).
+
+%%--------------------------------------------------------------------
+%% @spec    (IfData) ->
+%%            Addresses
+%%
+%%            IfData = {IfName, [Opt]}
+%%            Opt = {string(), OptValue}
+%%            Addresses = [string()]
+%%
+%% @doc     Return all global addresses from the interface data.
+%% @end
+%%--------------------------------------------------------------------
+filter_ifaddrs(IfData) when is_list(IfData) ->
+    lists:foldl(fun({OptName, OptValue}, AccIn) ->
+                        case OptName of
+                            addr ->
+                                [OptValue | AccIn];
+                            _ ->
+                                AccIn
+                        end
+                end,
+                [],
+                IfData).
 
 %%--------------------------------------------------------------------
 %% @spec    (IfData) ->
@@ -164,6 +205,66 @@ get_ifaddrs2(IfData) when is_list(IfData) ->
 	    makeip(AddrT);
 	false ->
 	    ignore
+    end.
+
+%%--------------------------------------------------------------------
+%% @spec    (Flags, Addrs) -> Addresses
+%%
+%%            Flags = [atom()]
+%%            Addrs = [tuple()]
+%%            Addresses = [string()]
+%%
+%% @doc     Return the global addresses from the list of addresses
+%%          if the Interface is 'up'.
+%% @end
+%%--------------------------------------------------------------------
+usable_addrs(_Flags, []) ->
+    %% Interface has no address, might happen on BSD
+    [];
+usable_addrs(Flags, Addrs) when is_list(Flags), is_list(Addrs) ->
+    case lists:member(up, Flags) of
+	true ->
+	    %% Check address
+            lists:filter(fun usable_addr/1, Addrs);
+        false ->
+	    false
+    end.
+
+%%--------------------------------------------------------------------
+%% @spec    (Addr) -> true | false
+%%
+%%            Addrs = tuple()
+%%
+%% @doc     Return the true if it is a global addresses.
+%% @end
+%%--------------------------------------------------------------------
+usable_addr(AddrT) ->
+    case AddrT of
+	{127, _, _, _} ->
+	    %% IPv4 real loopback address - ignore
+	    false;
+	{0, 0, 0, 0, 0, 0, 0, 1} ->
+	    %% IPv6 localhost address - ignore
+	    false;
+	%% IPv6 link local unicast - ignore
+	{16#FE80, _, _, _, _, _, _, _} ->
+	    false;
+	{16#FE90, _, _, _, _, _, _, _} ->
+	    false;
+	{16#FEA0, _, _, _, _, _, _, _} ->
+	    false;
+	{16#FEB0, _, _, _, _, _, _, _} ->
+	    false;
+	{X, _, _, _, _, _, _, _} ->
+	    if
+		%% IPv6 multicast FF00::/8 - ignore
+		X bsr 8 =:= 16#FF ->
+		    false;
+		true ->
+		    true
+	    end;
+	_ ->
+	    true
     end.
 
 %%--------------------------------------------------------------------

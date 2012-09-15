@@ -137,7 +137,7 @@ get_listenerspecs() ->
 			    This = [{tcp, IP, Port} | TLS],
 			    This ++ Acc
 %%		    end, [], lists:reverse(siphost:myip_list() ++ ["127.0.0.1"])),
-		    end, [], lists:reverse(siphost:myip_list())),
+		    end, [], lists:reverse(lists:filter(fun is_ipv4/1, siphost:myip_list()))),
 
     IPv6Specs =
 	lists:foldl(fun(IP, Acc) ->
@@ -153,11 +153,17 @@ get_listenerspecs() ->
 				end,
 			    This = [{tcp6, IP, Port} | TLS],
 			    This ++ Acc
-		    end, [], ["::"]),
+		    end, [], lists:reverse(lists:filter(fun is_ipv6/1, siphost:myip_list()))),
 
     Listeners = IPv4Specs ++ IPv6Specs,
 
     format_listener_specs(Listeners).
+
+is_ipv4(Addr) when is_list(Addr) ->
+    lists:member($., Addr).
+
+is_ipv6(Addr) when is_list(Addr) ->
+    lists:member($:, Addr).
 
 %%--------------------------------------------------------------------
 %% @spec    (L) ->
@@ -183,7 +189,7 @@ format_listener_specs([{Proto, IP, Port} | T], Res)
     case yxa_config:get_env(enable_v6) of
 	{ok, true} ->
 	    Id = {listener, Proto, IP, Port},
-	    {ok, IPt} = inet_parse:ipv6_address(IP),
+	    {ok, IPt} = util:parse_v6(IP),
 	    MFA = {tcp_listener, start_link, [IPt, Proto, Port]},
 	    Spec = {Id, MFA, permanent, brutal_kill, worker, [tcp_listener]},
 	    format_listener_specs(T, [Spec | Res]);
