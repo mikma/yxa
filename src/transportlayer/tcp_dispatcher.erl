@@ -144,12 +144,7 @@ get_listenerspecs() ->
 			    TLS =
 				case DisableTLS of
 				    true -> [];
-				    false ->
-					%% XXX add tls6 to this list when there is an Erlang version released
-					%% than has a ssl.erl that handles inet6. Current version (R9C-0) treats
-					%% inet6 as an invalid gen_tcp option.
-					%% [{tls6, IP, TLSport}]
-					[]
+				    false -> [{tls6, IP, TLSport}]
 				end,
 			    This = [{tcp6, IP, Port} | TLS],
 			    This ++ Acc
