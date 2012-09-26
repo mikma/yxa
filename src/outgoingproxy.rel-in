@@ -7,6 +7,7 @@
   {mnesia, "@ERLANG_LIB_VER_mnesia@"},
   {crypto, "@ERLANG_LIB_VER_crypto@"},
   {public_key, "@ERLANG_LIB_VER_public_key@"},
+  {inets, "@ERLANG_LIB_VER_inets@"},
   {yxa, "%VERSION%"},
   {outgoingproxy, "%VERSION%"}
  ]
