@@ -831,7 +831,7 @@ naptr_from_tuple({Order, Preference, Flags, Services, Regexp, Replacement}) ->
 %% @end
 %%--------------------------------------------------------------------
 remove_last_period(Replacement) ->
-    remove_last_period(Replacement, []).
+    lists:reverse(remove_last_period(Replacement, [])).
 
 remove_last_period([], Acc) ->
     Acc;
