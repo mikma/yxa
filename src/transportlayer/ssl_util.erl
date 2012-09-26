@@ -70,7 +70,8 @@ get_ssl_peer_info(Socket, Proto, IP, Port) when is_atom(Proto), is_list(IP), is_
     %% We keep it for unforseen events though.
     PeerCertRes =
 	try ssl:peercert(Socket) of
-	    PCRes -> PCRes
+	    {ok, Cert} when is_binary(Cert) ->
+		{ok, public_key:pkix_decode_cert(Cert, plain)}
 	catch
 	    error: E ->
 		ST = erlang:get_stacktrace(),
@@ -205,9 +206,14 @@ decode_ssl_rdnseq2([[H] | T], Res) when is_record(H, 'AttributeTypeAndValue') ->
 	    case ATAVDec#?ATTRIBUTE_TYPE_AND_VALUE.value of
 		{printableString, Value} ->
 		    decode_ssl_rdnseq2(T, [{Type, Value} | Res]);
+		{teletexString, Value} ->
+		    decode_ssl_rdnseq2(T, [{Type, Value} | Res]);
+		{TypeDec, _}  ->
+		    logger:log(debug, "SSL util: Could not decode ~p ~p ~p", [TypeDec, Type, H]),
+		    {error, "could not decode rdnSequence value"};
 		Str when is_list(Str) ->
-		    decode_ssl_rdnseq2(T, [{Type, Str}]);
-		_ ->
+		    decode_ssl_rdnseq2(T, [{Type, Str} | Res]);
+		S ->
 		    logger:log(debug, "SSL util: Could not decode ~p ~p", [Type, H]),
 		    {error, "could not decode rdnSequence value"}
 	    end
@@ -293,6 +299,8 @@ get_ssl_peer_info_host_altnames(Cert) when is_record(Cert, 'Certificate') ->
 
 %% get_tbs_extensions/2 - part of get_ssl_peer_info_host_altnames/1
 %% Returns : list() of 'Extension' record
+get_tbs_extensions(_Key, asn1_NOVALUE) ->
+    [];
 get_tbs_extensions(Key, Extensions) ->
     get_tbs_extensions(Key, Extensions, []).
 
