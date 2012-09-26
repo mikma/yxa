@@ -14,6 +14,7 @@
 	     yxa_test_config,
 	     contact,
 	     contact_param,
+	     cpl_db,
 	     database_call,
 	     database_eventdata,
 	     database_forward,
@@ -27,6 +28,7 @@
 	     dnsutil,
 	     eldap,
 	     'ELDAPv3',
+	     event_handler,
 	     gruu,
 	     hex,
 	     key_val_db,
@@ -89,7 +91,9 @@
 	     yxa_app,
 	     yxa_ctl,
 	     yxa_edoc,
-	     yxa_monitor
+	     yxa_monitor,
+	     yxa_proc,
+	     yxa_ssl_pkix_oid
 	    ]},
   {registered, []},
   {env, []},

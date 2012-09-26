@@ -6,7 +6,6 @@
 	     appserver,
 	     appserver_glue,
 	     appserver_test,
-	     cpl_db,
 	     cpl_test_util,
 	     interpret_backend,
 	     interpret_cpl,

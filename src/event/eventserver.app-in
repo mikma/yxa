@@ -14,7 +14,6 @@
     presence_pidf,
     presence_xmerl_xml,
     subscription,
-    event_handler,
     event_handler_csyslog
     ]},
   {registered, []},
