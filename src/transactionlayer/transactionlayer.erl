@@ -287,7 +287,7 @@ handle_info(timeout, State) ->
 	none ->
 	    ok;
 	{ok, Expired} when is_list(Expired) ->
-	    Pids = [transactionstatelist:extract([pid], TState) || TState <- Expired],
+	    Pids = [get_pid_from_transactionstate(TState) || TState <- Expired],
 	    %% Signal all Expired entrys that they are expired
 	    lists:map(fun(Pid) when is_pid(Pid) ->
 			      logger:log(debug, "Transaction layer: Telling transaction with pid ~p that "
